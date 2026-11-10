@@ -15,7 +15,7 @@
 <aside class="sidebar">
  <div class="brand"><div class="logo">E</div><div>English Coach<small>AI LANGUAGE LEARNING</small></div></div>
  <div><p class="navlabel">Menu principal</p><nav class="nav" id="nav">
-  <button class="active" data-page="home">⌂ Tableau de bord</button><button data-page="teacher">✦ Professeur IA</button><button data-page="lessons">▤ Leçons</button><button data-page="practice">◎ Exercices</button><button data-page="words">▧ Vocabulaire</button><button data-page="premium">♛ Premium</button>
+  <button class="active" data-page="home">⌂ Tableau de bord</button><button data-page="teacher">✦ Professeur IA</button><button data-page="lessons">▤ Leçons</button><button data-page="practice">◎ Exercices</button><button data-page="words">▧ Vocabulaire</button><button data-page="tourism">🌍 English for Tourism</button><button data-page="premium">♛ Premium</button>
  </nav></div>
  <div class="side-note"><b>Un peu chaque jour.</b><br>15 minutes de pratique quotidienne pour progresser en anglais.</div>
 </aside>
@@ -42,15 +42,46 @@
 <section class="page" id="lessons"><div class="section-head"><div><h2>Mes leçons</h2><div class="small muted">12 leçons pour commencer ton parcours.</div></div><span class="small muted">Niveau A1</span></div><div class="grid lesson-grid" id="lessonList"></div></section>
 <section class="page" id="practice"><div class="card" style="max-width:650px"><div class="section-head"><span class="small muted">EXERCICE · A1</span><span class="small muted" id="qCount">Question 1 / 5</span></div><div class="bar"><span id="qBar" style="width:20%"></span></div><div class="eyebrow" style="margin-top:25px;color:var(--purple)">CHOISIS LA BONNE RÉPONSE</div><h2 id="question" style="margin-top:9px">Comment dit-on « Bonjour » en anglais ?</h2><div class="options" id="answers"></div><div class="feedback" id="feedback"></div><button class="btn" id="check" style="width:100%;margin-top:17px" disabled>Valider ma réponse</button></div></section>
 <section class="page" id="words"><div class="section-head"><div><h2>Mon vocabulaire</h2><div class="small muted">Les mots utiles pour tes premières conversations.</div></div></div><div class="grid lesson-grid" id="wordList"></div></section>
+
+<section class="page" id="tourism">
+  <div class="hero">
+    <div class="tag">PROFESSIONAL ENGLISH · TOURISM</div>
+    <h2>English for Tourism 🌍</h2>
+    <p>Learn to welcome international visitors, guide tours and present Gabon's natural and cultural heritage in English.</p>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>My tourism training</h2>
+      <div class="small muted">6 professional modules to become a confident tour guide.</div>
+    </div>
+    <span class="small muted" id="tourProgress">0 / 6 completed</span>
+  </div>
+
+  <div class="bar" style="margin-bottom:18px">
+    <span id="tourBar"></span>
+  </div>
+
+  <div class="grid lesson-grid" id="tourismList"></div>
+</section>
 <section class="page" id="premium"><div class="card pricing"><div style="font-size:35px">♛</div><div class="eyebrow" style="color:var(--purple)">ENGLISH COACH PREMIUM</div><h2 style="margin-top:9px">Passe au niveau supérieur</h2><div class="price">2 000 <span style="font-size:14px;font-weight:500">FCFA / mois</span></div><p class="small muted">Prix indicatif de lancement.</p><div class="features"><div>✓ Conversations avec le professeur IA</div><div>✓ Leçons et exercices avancés</div><div>✓ Parcours personnalisé</div><div>✓ Suivi détaillé de la progression</div><div>✓ Anglais professionnel et touristique</div></div><button class="btn" id="subscribe" style="width:100%">Activer Premium</button><p class="small muted">Paiement en ligne à connecter avant toute vente réelle. Cette version ne débite aucun paiement.</p></div></section>
 <div class="footer">ENGLISH COACH AI · Learn English, one day at a time.</div>
 </main></div><div class="toast" id="toast"></div>
 <script>
 const $=s=>document.querySelector(s);
 const state=JSON.parse(localStorage.getItem('eca-progress')||'{"points":0,"completed":[],"minutes":0}');
+ state.tourismCompleted = state.tourismCompleted || [];
 function save(){localStorage.setItem('eca-progress',JSON.stringify(state));updateStats()}
 function updateStats(){$('#points').textContent=state.points;$('#done').textContent=state.completed.length;$('#daily').textContent=Math.min(15,state.minutes)+'/15';$('#progress').style.width=(state.completed.length/12*100)+'%';$('#progressText').textContent=Math.round(state.completed.length/12*100)+' % complété'}
-const pages={home:'Bonjour ! 👋',teacher:'Mon professeur IA',lessons:'Apprendre avec les leçons',practice:'Teste tes connaissances',words:'Vocabulaire anglais',premium:'Ton abonnement'};
+const pages={
+home:'Bonjour ! 👋',
+teacher:'Mon professeur IA',
+lessons:'Apprendre avec les leçons',
+practice:'Teste tes connaissances',
+words:'Vocabulaire anglais',
+tourism:'English for Tourism',
+premium:'Ton abonnement'
+};
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===p));document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('#title').textContent=pages[p];window.scrollTo(0,0)}
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 const lessons=[
@@ -70,7 +101,230 @@ const lessons=[
 function renderLessons(){$('#lessonList').innerHTML=lessons.map((l,i)=>`<article class="card"><div class="lesson"><div class="emoji">${l[0]}</div><div><h3>${i+1}. ${l[1]} ${state.completed.includes(i)?'✓':''}</h3><p>${l[2]}</p></div></div><button class="btn secondary" data-lesson="${i}">Étudier cette leçon</button></article>`).join('');document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>showLesson(+b.dataset.lesson))}
 function showLesson(i){let l=lessons[i];$('#lessonList').innerHTML=`<article class="card" style="grid-column:1/-1"><button class="btn secondary" id="back">← Retour aux leçons</button><h2 style="margin-top:20px">${l[0]} ${l[1]}</h2><p class="small muted">${l[2]}</p><div class="grid cols" style="margin-top:17px">${[0,2,4].map(j=>`<div class="card" style="background:#f7f6ff"><b>${l[3][j]}</b><p class="small muted">${l[3][j+1]}</p></div>`).join('')}</div><button class="btn" id="finish" style="margin-top:18px">Marquer comme terminée ✓</button></article>`;$('#back').onclick=renderLessons;$('#finish').onclick=()=>{if(!state.completed.includes(i)){state.completed.push(i);state.points+=10;state.minutes+=3;save()}renderLessons();toast('Leçon enregistrée !')}}
 renderLessons();
-const words=[['Hello','Bonjour','Hello, how are you?'],['Thank you','Merci','Thank you very much.'],['Please','S’il vous plaît','Water, please.'],['Friend','Ami','He is my friend.'],['Travel','Voyager','I love to travel.'],['Beautiful','Magnifique','Gabon is beautiful.'],['Welcome','Bienvenue','Welcome to our hotel.'],['Help','Aide','Can you help me?'],['Food','Nourriture','The food is delicious.'],['Water','Eau','I need some water.']];
+const tourismModules = [
+{
+ icon:'🤝',
+ title:'Welcoming Tourists',
+ desc:'Welcome visitors and introduce yourself.',
+ phrases:[
+ ['Welcome to Gabon!','Bienvenue au Gabon !'],
+ ['My name is Yannick.','Je m’appelle Yannick.'],
+ ['I will be your tour guide.','Je serai votre guide touristique.'],
+ ['How was your flight?','Comment s’est passé votre vol ?'],
+ ['Is this your first time in Gabon?','Est-ce votre première fois au Gabon ?'],
+ ['Please follow me.','Veuillez me suivre.']
+ ],
+ dialogue:[
+ ['Guide','Good morning! Welcome to Gabon.'],
+ ['Tourist','Good morning! Thank you.'],
+ ['Guide','My name is Yannick. I will be your guide during your stay.'],
+ ['Tourist','Nice to meet you, Yannick.'],
+ ['Guide','Nice to meet you too. How was your flight?']
+ ],
+ task:'Practise welcoming an international visitor at Libreville airport.'
+},
+{
+ icon:'✈️',
+ title:'Airport & Transfers',
+ desc:'Handle airport arrivals and transportation.',
+ phrases:[
+ ['May I see your passport, please?','Puis-je voir votre passeport ?'],
+ ['How many bags do you have?','Combien de bagages avez-vous ?'],
+ ['Your driver is waiting outside.','Votre chauffeur vous attend dehors.'],
+ ['The hotel is about 20 minutes away.','L’hôtel est à environ 20 minutes.'],
+ ['Please fasten your seat belt.','Veuillez attacher votre ceinture.'],
+ ['We are on our way to the hotel.','Nous sommes en route vers l’hôtel.']
+ ],
+ dialogue:[
+ ['Guide','Hello! Are you Mr Smith?'],
+ ['Tourist','Yes, that’s me.'],
+ ['Guide','Welcome to Gabon. Did you collect all your luggage?'],
+ ['Tourist','Yes, I have two bags.'],
+ ['Guide','Perfect. Our vehicle is waiting outside.'],
+ ['Tourist','Great, thank you!']
+ ],
+ task:'Practise meeting a client at the airport and taking them to their hotel.'
+},
+{
+ icon:'🌿',
+ title:'Introducing Gabon',
+ desc:'Present Gabon, its culture and biodiversity.',
+ phrases:[
+ ['Gabon is located in Central Africa.','Le Gabon est situé en Afrique centrale.'],
+ ['The capital city is Libreville.','La capitale est Libreville.'],
+ ['Gabon is known for its rich biodiversity.','Le Gabon est connu pour sa riche biodiversité.'],
+ ['More than 80% of the country is covered by forests.','Plus de 80 % du pays est couvert de forêts.'],
+ ['Gabon has several national parks.','Le Gabon possède plusieurs parcs nationaux.'],
+ ['We have a rich cultural heritage.','Nous avons un riche patrimoine culturel.']
+ ],
+ dialogue:[
+ ['Guide','Gabon is a beautiful country in Central Africa.'],
+ ['Tourist','What makes Gabon special?'],
+ ['Guide','Gabon has tropical rainforests, beaches and incredible wildlife.'],
+ ['Tourist','Can we see elephants here?'],
+ ['Guide','Yes! Gabon is one of the best places to discover forest elephants.']
+ ],
+ task:'Give a short presentation about Gabon to a group of foreign visitors.'
+},
+{
+ icon:'🦍',
+ title:'Guiding a Safari',
+ desc:'Explain wildlife and give safety instructions.',
+ phrases:[
+ ['Please stay close to the group.','Veuillez rester près du groupe.'],
+ ['Keep your distance from the animals.','Gardez vos distances avec les animaux.'],
+ ['Look over there!','Regardez là-bas !'],
+ ['These are forest elephants.','Ce sont des éléphants de forêt.'],
+ ['Please remain quiet.','Veuillez rester silencieux.'],
+ ['Wild animals can be unpredictable.','Les animaux sauvages peuvent être imprévisibles.']
+ ],
+ dialogue:[
+ ['Guide','Before we start, please stay close to the group.'],
+ ['Tourist','Are we likely to see elephants today?'],
+ ['Guide','We have a good chance, but wildlife sightings are never guaranteed.'],
+ ['Tourist','I understand.'],
+ ['Guide','Excellent. Please remain quiet during the observation.']
+ ],
+ task:'Explain safari safety rules and describe an animal spotted in Loango National Park.'
+},
+{
+ icon:'🏨',
+ title:'Hotels & Restaurants',
+ desc:'Manage accommodation and meal arrangements.',
+ phrases:[
+ ['Do you have a reservation?','Avez-vous une réservation ?'],
+ ['Breakfast is included.','Le petit-déjeuner est inclus.'],
+ ['Your room is ready.','Votre chambre est prête.'],
+ ['Dinner will be served at 7 p.m.','Le dîner sera servi à 19 heures.'],
+ ['Would you like something to drink?','Voulez-vous quelque chose à boire ?'],
+ ['Please let me know if you need anything.','N’hésitez pas à me prévenir si vous avez besoin de quelque chose.']
+ ],
+ dialogue:[
+ ['Guide','Good evening. Your room is ready.'],
+ ['Tourist','Thank you. Is breakfast included?'],
+ ['Guide','Yes, breakfast is included and will be served at 7 a.m.'],
+ ['Tourist','Perfect. What time is dinner?'],
+ ['Guide','Dinner will be served at 7 p.m.']
+ ],
+ task:'Help a tourist check in at a hotel and explain the meal schedule.'
+},
+{
+ icon:'🧭',
+ title:'Explaining Tours & Activities',
+ desc:'Present itineraries, activities and schedules.',
+ phrases:[
+ ['We will leave at 8 a.m.','Nous partirons à 8 heures.'],
+ ['The journey takes approximately two hours.','Le trajet dure environ deux heures.'],
+ ['We will take a boat across the lagoon.','Nous traverserons la lagune en bateau.'],
+ ['The hike takes about one hour.','La randonnée dure environ une heure.'],
+ ['Please bring comfortable shoes.','Veuillez apporter des chaussures confortables.'],
+ ['The activity is included in your package.','L’activité est incluse dans votre forfait.']
+ ],
+ dialogue:[
+ ['Guide','Tomorrow we will visit Loango National Park.'],
+ ['Tourist','What time do we leave?'],
+ ['Guide','We will leave at 7 a.m. after breakfast.'],
+ ['Tourist','How long is the journey?'],
+ ['Guide','Approximately two hours, depending on road conditions.'],
+ ['Tourist','What should I bring?'],
+ ['Guide','Please bring comfortable shoes, water and sunscreen.']
+ ],
+ task:'Present a one-day excursion in Gabon and explain the schedule to your clients.'
+}
+];
+
+function renderTourism(){
+ const completed = state.tourismCompleted.length;
+ $('#tourProgress').textContent = completed + ' / 6 completed';
+ $('#tourBar').style.width = (completed/6*100) + '%';
+
+ $('#tourismList').innerHTML = tourismModules.map((m,i)=>`
+  <article class="card">
+   <div class="lesson">
+    <div class="emoji">${m.icon}</div>
+    <div>
+     <h3>${i+1}. ${m.title} ${state.tourismCompleted.includes(i)?'✓':''}</h3>
+     <p>${m.desc}</p>
+    </div>
+   </div>
+   <button class="btn secondary" data-tour="${i}">Start module →</button>
+  </article>
+ `).join('');
+
+ document.querySelectorAll('[data-tour]').forEach(b=>{
+  b.onclick=()=>showTourismModule(Number(b.dataset.tour));
+ });
+}
+
+function showTourismModule(i){
+ const m = tourismModules[i];
+
+ $('#tourismList').innerHTML = `
+  <article class="card" style="grid-column:1/-1">
+   <button class="btn secondary" id="tourBack">← All modules</button>
+   <h2 style="margin-top:20px">${m.icon} ${m.title}</h2>
+   <p class="small muted">${m.desc}</p>
+
+   <div class="card" style="margin-top:18px;background:#f7f6ff">
+    <b>Essential expressions</b>
+    <div class="grid" style="gap:12px;margin-top:15px">
+     ${m.phrases.map(p=>`
+      <div>
+       <b>${p[0]}</b>
+       <div class="small muted">${p[1]}</div>
+      </div>
+     `).join('')}
+    </div>
+   </div>
+
+   <div class="card" style="margin-top:15px">
+    <b>Real-life conversation</b>
+    <p class="small muted">Listen, read and practise this dialogue.</p>
+    ${m.dialogue.map(d=>`
+     <div style="padding:9px 0;border-bottom:1px solid var(--line)">
+      <b style="color:${d[0]==='Guide'?'var(--purple)':'var(--green)'}">${d[0]}:</b>
+      <span>${d[1]}</span>
+     </div>
+    `).join('')}
+   </div>
+
+   <div class="card" style="margin-top:15px;background:#f7f6ff">
+    <b>🎯 Your speaking challenge</b>
+    <p class="small">${m.task}</p>
+    <button class="btn" id="tourPractice">Practise with AI professor →</button>
+   </div>
+
+   <button class="btn" id="tourFinish" style="width:100%;margin-top:18px">
+    Mark module as completed ✓
+   </button>
+  </article>
+ `;
+
+ $('#tourBack').onclick=renderTourism;
+
+ $('#tourPractice').onclick=()=>{
+  $('#message').value =
+   'I am a Gabonese tour guide. Please help me practise this tourism situation in English: ' +
+   m.task +
+   ' Act as a tourist. Ask me questions one by one, correct my English in French and help me improve.';
+  go('teacher');
+  $('#message').focus();
+ };
+
+ $('#tourFinish').onclick=()=>{
+  if(!state.tourismCompleted.includes(i)){
+   state.tourismCompleted.push(i);
+   state.points+=15;
+   state.minutes+=5;
+   save();
+  }
+  renderTourism();
+  toast('Professional module completed! +15 points 🎉');
+ };
+}
+
+renderTourism();
+ const words=[['Hello','Bonjour','Hello, how are you?'],['Thank you','Merci','Thank you very much.'],['Please','S’il vous plaît','Water, please.'],['Friend','Ami','He is my friend.'],['Travel','Voyager','I love to travel.'],['Beautiful','Magnifique','Gabon is beautiful.'],['Welcome','Bienvenue','Welcome to our hotel.'],['Help','Aide','Can you help me?'],['Food','Nourriture','The food is delicious.'],['Water','Eau','I need some water.']];
 $('#wordList').innerHTML=words.map(w=>`<div class="card word"><div><b>${w[0]}</b><p class="small muted">${w[2]}</p></div><span>${w[1]}</span></div>`).join('');
 const qs = [
   ['Comment dit-on « Bonjour » en anglais ?', ['Goodbye', 'Hello', 'Thanks'], 1, 'Hello signifie Bonjour.'],
