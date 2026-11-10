@@ -106,11 +106,6 @@
   </select>
 </div>
 
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-  <button class="voice-btn" id="micButton">🎤 Parler</button>
-  <button class="voice-btn" id="stopVoice">🔇 Arrêter la voix</button>
-</div>
-
 <div class="voice-status" id="voiceStatus">
   Choisis ton niveau et ton mode, puis commence à parler.
 </div>
@@ -120,10 +115,6 @@
 
 <div class="chat-controls">
   <textarea id="message" placeholder="Write or speak in English..." maxlength="1500"></textarea>
-
-  <button class="btn" id="micButton" type="button">
-    🎤 Parler
-  </button>
 
   <button class="btn" id="send" type="button">
     Envoyer
@@ -652,7 +643,7 @@ $('#stopVoice').onclick = () => {
     'Lecture et enregistrement arrêtés.';
 };
 
-{let d=document.createElement('div');d.className='msg '+who;d.textContent=text;$('#messages').appendChild(d);$('#messages').scrollTop=$('#messages').scrollHeight}
+
 
 /* CONVERSATION HISTORY */
 
