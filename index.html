@@ -722,7 +722,14 @@ async function send() {
   }
 }
 
-$('#send').onclick=send;$('#message').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+$('#send').addEventListener('click', send);
+
+$('#message').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+});
 $('#subscribe').onclick=()=>toast('Le paiement Premium doit être connecté avant de pouvoir activer un abonnement.');
 function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3500)}
 updateStats();
