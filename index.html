@@ -625,6 +625,9 @@ $('#micButton').onclick = () => {
  
 /* TEXT TO SPEECH */
 
+
+let currentUtterance = null;
+
 function speakText(text) {
   if (!('speechSynthesis' in window)) {
     toast('La lecture vocale n’est pas disponible.');
@@ -633,13 +636,30 @@ function speakText(text) {
 
   window.speechSynthesis.cancel();
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
-  utterance.rate = 0.85;
-  utterance.pitch = 1;
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.lang = 'en-US';
+  currentUtterance.rate = 0.85;
+  currentUtterance.pitch = 1;
 
-  window.speechSynthesis.speak(utterance);
+  window.speechSynthesis.speak(currentUtterance);
 }
+
+function pauseSpeech() {
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.pause();
+  }
+}
+
+function resumeSpeech() {
+  if (window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+  }
+}
+
+function stopSpeech() {
+  window.speechSynthesis.cancel();
+}
+
 
 $('#stopVoice').onclick = () => {
   if (recognition && isRecording) {
