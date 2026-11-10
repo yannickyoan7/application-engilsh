@@ -113,8 +113,13 @@
  <div class="messages" id="messages" aria-live="polite"><div class="msg ai">Hello! I'm your English coach. 😊<br>Tell me about yourself in English. Don't worry about mistakes — I'll correct you in French.</div></div>
  
 
+
 <div class="chat-controls">
   <textarea id="message" placeholder="Write or speak in English..." maxlength="1500"></textarea>
+
+  <button class="btn" id="micButton" type="button">
+    🎤 Parler
+  </button>
 
   <button class="btn" id="send" type="button">
     Envoyer
@@ -583,10 +588,18 @@ document.getElementById('micButton').textContent = '🔴 Écoute en cours...';
   };
 
  recognition.onend = () => {
-    isRecording = false;
+  isRecording = false;
 
-    document.getElementById('micButton').classList.remove('recording');
-    document.getElementById('micButton').textContent = '🎤 Parler';
+  const micButton = document.getElementById('micButton');
+
+  if (micButton) {
+    micButton.classList.remove('recording');
+    micButton.textContent = '🎤 Parler';
+    micButton.style.display = '';
+    micButton.disabled = false;
+  }
+
+  $('#voiceStatus').textContent = '';
 };
 }
 
