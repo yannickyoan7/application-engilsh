@@ -72,12 +72,105 @@ function showLesson(i){let l=lessons[i];$('#lessonList').innerHTML=`<article cla
 renderLessons();
 const words=[['Hello','Bonjour','Hello, how are you?'],['Thank you','Merci','Thank you very much.'],['Please','S’il vous plaît','Water, please.'],['Friend','Ami','He is my friend.'],['Travel','Voyager','I love to travel.'],['Beautiful','Magnifique','Gabon is beautiful.'],['Welcome','Bienvenue','Welcome to our hotel.'],['Help','Aide','Can you help me?'],['Food','Nourriture','The food is delicious.'],['Water','Eau','I need some water.']];
 $('#wordList').innerHTML=words.map(w=>`<div class="card word"><div><b>${w[0]}</b><p class="small muted">${w[2]}</p></div><span>${w[1]}</span></div>`).join('');
-const qs=[['Comment dit-on « Bonjour » en anglais ?',['Goodbye','Hello','Thanks'],1,'Hello signifie Bonjour.'],['Que signifie « Thank you » ?',['Merci','Bonjour','Au revoir'],0,'Thank you signifie Merci.'],['Complète : My name ___ John.',['are','am','is'],2,'On dit My name is John.'],['Comment dit-on « Eau » ?',['Food','Water','House'],1,'Water signifie Eau.'],['Que signifie « I am from Gabon » ?',['Je vais au Gabon','Je viens du Gabon','J’aime le Gabon'],1,'I am from Gabon signifie Je viens du Gabon.']];
-let qi=0,choice=-1,checked=false,score=0;
-function drawQ(){let q=qs[qi];choice=-1;checked=false;$('#question').textContent=q[0];$('#qCount').textContent=`Question ${qi+1} / ${qs.length}`;$('#qBar').style.width=((qi+1)/qs.length*100)+'%';$('#feedback').textContent='';$('#check').disabled=true;$('#check').textContent='Valider ma réponse';$('#answers').innerHTML=q[1].map((a,i)=>`<button class="option" data-opt="${i}">${String.fromCharCode(65+i)}. ${a}</button>`).join('');document.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{if(checked)return;choice=+b.dataset.opt;document.querySelectorAll('[data-opt]').forEach(x=>x.classList.toggle('selected',x===b));$('#check').disabled=false})}
+const qs = [
+  ['Comment dit-on « Bonjour » en anglais ?', ['Goodbye', 'Hello', 'Thanks'], 1, 'Hello signifie Bonjour.'],
+  ['Que signifie « Thank you » ?', ['Merci', 'Bonjour', 'Au revoir'], 0, 'Thank you signifie Merci.'],
+  ['Complète : My name ___ John.', ['are', 'am', 'is'], 2, 'On dit My name is John.'],
+  ['Comment dit-on « Eau » ?', ['Food', 'Water', 'House'], 1, 'Water signifie Eau.'],
+  ['Que signifie « I am from Gabon » ?', ['Je vais au Gabon', 'Je viens du Gabon', 'J’aime le Gabon'], 1, 'I am from Gabon signifie Je viens du Gabon.']
+];
+
+let qi = 0;
+let choice = -1;
+let checked = false;
+let score = 0;
+
+function drawQ() {
+  const q = qs[qi];
+  choice = -1;
+  checked = false;
+
+  $('#question').textContent = q[0];
+  $('#qCount').textContent = `Question ${qi + 1} / ${qs.length}`;
+  $('#qBar').style.width = ((qi + 1) / qs.length * 100) + '%';
+  $('#feedback').textContent = '';
+  $('#check').disabled = true;
+  $('#check').textContent = 'Valider ma réponse';
+
+  $('#answers').innerHTML = q[1].map((a, i) =>
+    `<button class="option" data-opt="${i}">${String.fromCharCode(65+i)}. ${a}</button>`
+  ).join('');
+
+  document.querySelectorAll('[data-opt]').forEach(b => {
+    b.onclick = () => {
+      if (checked) return;
+      choice = Number(b.dataset.opt);
+      document.querySelectorAll('[data-opt]').forEach(x =>
+        x.classList.toggle('selected', x === b)
+      );
+      $('#check').disabled = false;
+    };
+  });
+}
+
+function finishQuiz() {
+  $('#question').textContent = `Ton résultat : ${score} / ${qs.length}`;
+  $('#answers').innerHTML = '';
+  $('#feedback').innerHTML =
+    `<b>${score >= 4 ? 'Excellent travail ! 🎉' : 'Continue tes efforts ! 💪'}</b><br>
+    Tu as obtenu ${Math.round(score / qs.length * 100)} % de bonnes réponses.`;
+
+  $('#qCount').textContent = 'Quiz terminé';
+  $('#qBar').style.width = '100%';
+  $('#check').textContent = 'Recommencer le quiz';
+  $('#check').disabled = false;
+
+  $('#check').onclick = () => {
+    qi = 0;
+    score = 0;
+    drawQ();
+    $('#check').onclick = validateAnswer;
+  };
+}
+
+function validateAnswer() {
+  if (checked) {
+    if (qi < qs.length - 1) {
+      qi++;
+      drawQ();
+    } else {
+      finishQuiz();
+    }
+    return;
+  }
+
+  if (choice < 0) return;
+
+  checked = true;
+  const q = qs[qi];
+  const correct = choice === q[2];
+
+  if (correct) {
+    score++;
+    state.points += 5;
+    state.minutes += 1;
+    save();
+  }
+
+  document.querySelectorAll('[data-opt]').forEach((b, i) => {
+    if (i === q[2]) b.classList.add('correct');
+    else if (i === choice) b.classList.add('wrong');
+  });
+
+  $('#feedback').innerHTML =
+    `<b>${correct ? 'Bonne réponse ! 🎉' : 'Pas tout à fait.'}</b><br>${q[3]}`;
+
+  $('#check').textContent =
+    qi === qs.length - 1 ? 'Voir mon résultat' : 'Question suivante →';
+}
+
+$('#check').onclick = validateAnswer;
 drawQ();
-$('#check').onclick=()=>{if(checked){if(qi<qs.length-1){qi++;drawQ()}else{qi=0;score=0;drawQ()}return}if(choice<0)return;checked=true;let q=qs[qi],ok=choice===q[2];if(ok){score++;state.points+=5;state.minutes+=1;save()}document.querySelectorAll('[data-opt]').forEach((b,i)=>{if(i===q[2])b.classList.add('correct');else if(i===choice)b.classList.add('wrong')});$('#feedback').innerHTML=`<b>${ok?'Bonne réponse ! 🎉':'Pas tout à fait.'}</b><br>${q[3]}`;$('#check').textContent=qi===qs.length-1?'Voir le résultat':'Question suivante →';if(qi===qs.length-1){$('#check').onclick=()=>{$('#question').textContent=`Résultat : ${score} / ${qs.length}`;$('#answers').innerHTML='<p class="muted">Bravo ! Tu peux recommencer pour améliorer ton score.</p>';$('#feedback').textContent='';$('#check').textContent='Recommencer';$('#check').onclick=()=>{qi=0;score=0;$('#check').onclick=nextQuestion;drawQ()}}}};
-function nextQuestion(){$('#check').onclick=null;drawQ()}
 document.querySelectorAll('.topic').forEach(b=>b.onclick=()=>{$('#message').value=b.dataset.topic;$('#message').focus()});
 function addMsg(text,who){let d=document.createElement('div');d.className='msg '+who;d.textContent=text;$('#messages').appendChild(d);$('#messages').scrollTop=$('#messages').scrollHeight}
 async function send(){let text=$('#message').value.trim();if(!text)return;$('#message').value='';addMsg(text,'user');$('#send').disabled=true;$('#send').textContent='...';try{let r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});let data=await r.json();if(!r.ok)throw new Error(data.error||'Erreur serveur');addMsg(data.reply,'ai');state.minutes+=2;save()}catch(e){addMsg('Je ne peux pas répondre pour le moment. '+e.message,'ai')}finally{$('#send').disabled=false;$('#send').textContent='Envoyer'}}
