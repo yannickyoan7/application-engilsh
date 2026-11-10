@@ -117,10 +117,25 @@
 
  <div class="messages" id="messages" aria-live="polite"><div class="msg ai">Hello! I'm your English coach. 😊<br>Tell me about yourself in English. Don't worry about mistakes — I'll correct you in French.</div></div>
  
+
 <div class="chat-controls">
   <textarea id="message" placeholder="Write or speak in English..." maxlength="1500"></textarea>
-  <button class="btn" id="send">Envoyer</button>
+
+  <button class="btn" id="micButton" type="button">
+    🎤 Parler
+  </button>
+
+  <button class="btn" id="send" type="button">
+    Envoyer
+  </button>
+
+  <button class="btn" id="stopVoice" type="button">
+    ⏹ Arrêter
+  </button>
 </div>
+
+<div id="voiceStatus" style="font-size:13px; margin-top:8px; color:#777;"></div>
+
 
  <div class="notice" id="apiNotice">Le professeur IA nécessite une clé API configurée par l'administrateur. Les autres fonctions de l'application sont utilisables sans cette clé.</div>
  </div>
