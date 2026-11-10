@@ -125,9 +125,6 @@
   </button>
 </div>
 
-<div id="voiceStatus" style="font-size:13px; margin-top:8px; color:#777;"></div>
-
-
  <div class="notice" id="apiNotice">Le professeur IA nécessite une clé API configurée par l'administrateur. Les autres fonctions de l'application sont utilisables sans cette clé.</div>
  </div>
 </section>
@@ -566,8 +563,8 @@ if (SpeechRecognition) {
 
   recognition.onstart = () => {
     isRecording = true;
-    $('#micButton').classList.add('recording');
-    $('#micButton').textContent = '🔴 Écoute en cours...';
+   document.getElementById('micButton').classList.add('recording');
+document.getElementById('micButton').textContent = '🔴 Écoute en cours...';
     $('#voiceStatus').textContent = 'Speak in English...';
   };
 
@@ -585,11 +582,12 @@ if (SpeechRecognition) {
         : 'Erreur microphone : ' + event.error;
   };
 
-  recognition.onend = () => {
+ recognition.onend = () => {
     isRecording = false;
-    $('#micButton').classList.remove('recording');
-    $('#micButton').textContent = '🎤 Parler';
-  };
+
+    document.getElementById('micButton').classList.remove('recording');
+    document.getElementById('micButton').textContent = '🎤 Parler';
+};
 }
 
 $('#micButton').onclick = () => {
